@@ -3476,11 +3476,15 @@ def ichunked(iterable, n):
 
     """
     iterator = iter(iterable)
-    for first in zip(iterator):
-        rest = islice(iterator, n - 1)
-        cache1, cache2 = tee(rest)
-        yield chain(first, rest, cache1)
-        consume(cache2)
+    while True:
+        chunk, peek = tee(islice(iterator, n))
+        for _ in peek:
+            del peek, _
+            break
+        else:
+            return
+        yield chunk
+        consume(tee(chunk)[1])
 
 
 def iequals(*iterables):
