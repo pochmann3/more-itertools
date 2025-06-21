@@ -844,9 +844,9 @@ def triplewise(iterable):
 
 def _sliding_window_islice(iterable, n):
     # Fast path for small, non-zero values of n.
-    iterators = tee(iterable, n)
-    for i, iterator in enumerate(iterators):
-        next(islice(iterator, i, i), None)
+    *iterators, ahead = tee(iterable)
+    for _ in islice(ahead, n - 1):
+        iterators.append(tee(ahead)[1])
     return zip(*iterators)
 
 
