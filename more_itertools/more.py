@@ -136,7 +136,6 @@ __all__ = [
     'permutation_index',
     'powerset_of_sets',
     'product_index',
-    'raise_',
     'repeat_each',
     'repeat_last',
     'replace',
@@ -625,10 +624,6 @@ def one(iterable, too_short=None, too_long=None):
     raise too_short or ValueError('too few items in iterable (expected 1)')
 
 
-def raise_(exception, *args):
-    raise exception(*args)
-
-
 def strictly_n(iterable, n, too_short=None, too_long=None):
     """Validate that *iterable* has exactly *n* items and return them if
     it does. If it has fewer than *n* items, call function *too_short*
@@ -677,16 +672,12 @@ def strictly_n(iterable, n, too_short=None, too_long=None):
 
     """
     if too_short is None:
-        too_short = lambda item_count: raise_(
-            ValueError,
-            f'Too few items in iterable (got {item_count})',
-        )
+        def too_short(item_count):
+            raise ValueError(f'Too few items in iterable (got {item_count})')
 
     if too_long is None:
-        too_long = lambda item_count: raise_(
-            ValueError,
-            f'Too many items in iterable (got at least {item_count})',
-        )
+        def too_long(item_count):
+            raise ValueError(f'Too many items in iterable (got at least {item_count})')
 
     it = iter(iterable)
 
